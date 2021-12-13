@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/doction",
+    "crates/node",
+    "examples/prisma"
+]
