@@ -1,5 +1,4 @@
 use std::fs::File;
-use std::io;
 use std::io::{BufReader, BufRead};
 use walkdir::WalkDir;
 
@@ -16,15 +15,28 @@ pub fn find_schema_file() -> Result<String, String> {
     return Result::Err(String::from("No schema file found"))
 }
 
-pub fn read_schema_file(path: String) -> io::Result<io::BufReader<File>> {
-    let input = File::open(path)?; // ? assumes an Ok result
-    let buffered = BufReader::new(input);
-    return Ok(buffered)
+pub fn read_schema_file(path: String) -> Result<BufReader<File>, String> {
+    match File::open(path) {
+        Ok(val) => {
+            let buffered = BufReader::new(val);
+            return Ok(buffered)
+        },
+        Err(error) => {
+            return Err(String::from(error.to_string()))
+        }
+    }
 }
 
-pub fn parse_schema_file(file: io::BufReader<File>) -> io::Result<()> {
+pub fn parse_schema_file(file: BufReader<File>) -> Result<String, String> {
     for line in file.lines() {
-        println!("{}", line?);
+        match line {
+            Ok(value) => {
+                println!("{}", value)
+            },
+            Err(error) => {
+                return Err(String::from(error.to_string()))
+            }
+        }
     }
-    Ok(())
+    Ok(String::from("Success"))
 }
