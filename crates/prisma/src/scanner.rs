@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+#[derive(Debug)]
+#[allow(dead_code)]
 pub enum Tokens {
     LBRACE,
     RBRACE,
