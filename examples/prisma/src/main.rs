@@ -10,8 +10,8 @@ fn main() -> std::io::Result<()> {
         Ok(val) => {
             println!("{}", val);
             match prisma::read_schema_file(val) {
-                Ok(mut value) => {
-                    prisma::parse_schema_file(&mut value).unwrap();
+                Ok(value) => {
+                    prisma::parse_schema_file(value).unwrap();
                 }
                 Err(error) => {
                     println!("{}", error)

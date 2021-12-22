@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::str;
 use walkdir::WalkDir;
 
 mod scanner;
@@ -30,14 +29,8 @@ pub fn read_schema_file(path: String) -> Result<BufReader<File>, String> {
     }
 }
 
-pub fn parse_schema_file(file: &mut BufReader<File>) -> Result<String, String> {
-    let _scanner = Scanner::new(&file);
-    let mut line = String::new();
-    while file.read_line(&mut line).unwrap_or(0) > 0 {
-        for (i, ch) in line.chars().enumerate() {
-            println!("{} {}", i, ch)
-        }
-        line.clear();
-    }
+pub fn parse_schema_file(file: BufReader<File>) -> Result<String, String> {
+    let scanner = Scanner::new(file);
+    let _tokens = scanner.scan();
     Ok(String::from("Success"))
 }
