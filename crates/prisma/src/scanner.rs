@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
 #[allow(dead_code)]
-pub enum Tokens {
+pub enum Token {
     LBRACE,
     RBRACE,
     LPAREN,
@@ -24,14 +24,25 @@ impl Scanner {
             read_position: 0,
         }
     }
-    pub fn scan(mut self) -> Vec<Tokens> {
+    fn get_token(ch: char) -> Option<Token> {
+        match ch {
+            '{' => Some(Token::LBRACE),
+            '}' => Some(Token::RBRACE),
+            _ => None,
+        }
+    }
+    pub fn scan(mut self) -> Vec<Token> {
+        let mut tokens: Vec<Token> = vec![];
         let mut line = String::new();
         while self.input.read_line(&mut line).unwrap_or(0) > 0 {
             for (i, ch) in line.chars().enumerate() {
-                println!("{} {}", i, ch)
+                match Scanner::get_token(ch) {
+                    Some(token) => tokens.push(token),
+                    None => {}
+                }
             }
             line.clear();
         }
-        vec![Tokens::LBRACE]
+        tokens
     }
 }
