@@ -28,6 +28,8 @@ impl Scanner {
         match ch {
             '{' => Some(Token::LBRACE),
             '}' => Some(Token::RBRACE),
+            '(' => Some(Token::LPAREN),
+            ')' => Some(Token::RPAREN),
             _ => None,
         }
     }
