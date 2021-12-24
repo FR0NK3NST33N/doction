@@ -9,6 +9,7 @@ pub enum Token {
     LPAREN,
     RPAREN,
     ATTRIBUTE(String),
+    IDENT(String),
 }
 
 pub struct Scanner {
@@ -26,14 +27,23 @@ impl Scanner {
             '(' => Some(Token::LPAREN),
             ')' => Some(Token::RPAREN),
             '@' => {
-                let mut values: Vec<char> = chars
+                let mut attribute: Vec<char> = chars
                     .by_ref()
                     .take_while(|ch| !ch.is_whitespace() && !(ch == &'('))
                     .collect();
                 let mut at = vec!['@'];
-                at.append(&mut values);
+                at.append(&mut attribute);
 
                 return Some(Token::ATTRIBUTE(at.into_iter().collect()));
+            }
+            value if value.is_alphanumeric() => {
+                let mut rest: Vec<char> = chars
+                    .by_ref()
+                    .take_while(|ch| !ch.is_whitespace() && !(ch == &'('))
+                    .collect();
+                let mut first = vec![value];
+                first.append(&mut rest);
+                return Some(Token::IDENT(first.into_iter().collect()));
             }
             _ => None,
         }
