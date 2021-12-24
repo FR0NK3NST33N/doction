@@ -3,7 +3,6 @@ use std::io::{BufRead, BufReader};
 use std::iter::{Iterator, Peekable};
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub enum Token {
     LBRACE,
     RBRACE,
@@ -12,12 +11,10 @@ pub enum Token {
     ATTRIBUTE(String),
 }
 
-#[allow(dead_code)]
 pub struct Scanner {
     input: BufReader<File>,
 }
 
-#[allow(dead_code)]
 impl Scanner {
     pub fn new(input: BufReader<File>) -> Scanner {
         Scanner { input }
