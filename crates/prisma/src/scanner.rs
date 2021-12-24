@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::{Iterator, Peekable};
@@ -16,18 +15,13 @@ pub enum Token {
 #[allow(dead_code)]
 pub struct Scanner {
     input: BufReader<File>,
-    read_position: u64,
 }
 
 #[allow(dead_code)]
 impl Scanner {
     pub fn new(input: BufReader<File>) -> Scanner {
-        Scanner {
-            input,
-            read_position: 0,
-        }
+        Scanner { input }
     }
-    fn is_identifier(ch: Option<char>) {}
     fn get_token<I: Iterator<Item = char>>(ch: char, chars: &mut Peekable<I>) -> Option<Token> {
         match ch {
             '{' => Some(Token::LBRACE),
@@ -63,12 +57,6 @@ impl Scanner {
                 }
                 ch = iter.next();
             }
-            // for (i, ch) in line.chars().enumerate() {
-            //     match Scanner::get_token(ch) {
-            //         Some(token) => tokens.push(token),
-            //         None => {}
-            //     }
-            // }
             line.clear();
         }
         tokens
