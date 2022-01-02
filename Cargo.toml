@@ -2,6 +2,8 @@
 members = [
     "crates/doction",
     "crates/node",
+    "crates/notion",
     "crates/prisma",
-    "examples/prisma"
+    "examples/prisma",
+    "examples/notion"
 ]
