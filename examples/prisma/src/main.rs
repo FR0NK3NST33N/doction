@@ -1,7 +1,3 @@
-extern crate doction;
-extern crate node;
-extern crate prisma;
-
 fn main() -> std::io::Result<()> {
     doction::doction_test();
     node::node_test();
