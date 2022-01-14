@@ -10,6 +10,7 @@ pub enum Token {
     RPAREN,
     ATTRIBUTE(String),
     IDENT(String),
+    MODEL
 }
 
 pub struct Scanner {
@@ -43,10 +44,15 @@ impl Scanner {
                     .collect();
                 let mut first = vec![value];
                 first.append(&mut rest);
-                return Some(Token::IDENT(first.into_iter().collect()));
+                let term: String = first.into_iter().collect();
+                return Some(if Scanner::is_keyword(&term) { Token::MODEL } else {Token::IDENT(term)});
             }
             _ => None,
         }
+    }
+    fn is_keyword(term: &str) -> bool {
+        let keywords: Vec<&str> = vec!["model"];
+        return keywords.contains(&term);
     }
     pub fn scan(mut self) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
