@@ -45,6 +45,7 @@ impl Scanner {
                 let mut first = vec![value];
                 first.append(&mut rest);
                 let term: String = first.into_iter().collect();
+                // TODO: Add more keywords and helper to get correct keyword
                 return Some(if Scanner::is_keyword(&term) { Token::MODEL } else {Token::IDENT(term)});
             }
             _ => None,
