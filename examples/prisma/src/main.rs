@@ -7,7 +7,8 @@ fn main() -> std::io::Result<()> {
             println!("{}", val);
             match prisma::read_schema_file(val) {
                 Ok(value) => {
-                    prisma::parse_schema_file(value).unwrap();
+                    let tokens = prisma::parse_schema_file(value);
+                    println!("{:?}", tokens);
                 }
                 Err(error) => {
                     println!("{}", error)
