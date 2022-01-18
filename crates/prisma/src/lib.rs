@@ -30,7 +30,8 @@ pub fn find_schema_file_by_name(file_name: &str) -> Result<String, String> {
             return Result::Ok(entry.path().display().to_string());
         }
     }
-    return Result::Err(String::from("No schema file found"));
+    let message = format!("file {} not found", file_name);
+    return Result::Err(String::from(message));
 }
 
 pub fn read_schema_file(path: String) -> Result<BufReader<File>, String> {
