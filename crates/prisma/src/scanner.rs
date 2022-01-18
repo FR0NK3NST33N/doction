@@ -2,8 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::{Iterator, Peekable};
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
     LBRACE,
     RBRACE,
@@ -12,7 +11,7 @@ pub enum Token {
     ATTRIBUTE(String),
     IDENT(String),
     MODEL,
-    TYPE(String)
+    TYPE(String),
 }
 
 pub struct Scanner {
@@ -48,7 +47,13 @@ impl Scanner {
                 first.append(&mut rest);
                 let term: String = first.into_iter().collect();
                 // TODO: Add more keywords and helper to get correct keyword
-                let token = if Scanner::is_keyword(&term) { Token::MODEL } else if Scanner::is_type(&term) { Token::TYPE(term)} else {Token::IDENT(term)};
+                let token = if Scanner::is_keyword(&term) {
+                    Token::MODEL
+                } else if Scanner::is_type(&term) {
+                    Token::TYPE(term)
+                } else {
+                    Token::IDENT(term)
+                };
                 return Some(token);
             }
             _ => None,
@@ -59,7 +64,18 @@ impl Scanner {
         return keywords.contains(&term);
     }
     fn is_type(term: &str) -> bool {
-        let types: Vec<&str> = vec!["String", "Boolean", "Int", "BigInt", "Float", "Decimal", "DateTime", "Json", "Bytes", "Unsupported"];
+        let types: Vec<&str> = vec![
+            "String",
+            "Boolean",
+            "Int",
+            "BigInt",
+            "Float",
+            "Decimal",
+            "DateTime",
+            "Json",
+            "Bytes",
+            "Unsupported",
+        ];
         return types.contains(&term);
     }
     pub fn scan(mut self) -> Vec<Token> {
