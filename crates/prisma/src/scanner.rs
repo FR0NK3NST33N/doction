@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::{Iterator, Peekable};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
     LBRACE,
     RBRACE,
@@ -11,7 +11,7 @@ pub enum Token {
     ATTRIBUTE(String),
     IDENT(String),
     MODEL,
-    TYPE(String)
+    TYPE(String),
 }
 
 pub struct Scanner {
@@ -47,7 +47,13 @@ impl Scanner {
                 first.append(&mut rest);
                 let term: String = first.into_iter().collect();
                 // TODO: Add more keywords and helper to get correct keyword
-                let token = if Scanner::is_keyword(&term) { Token::MODEL } else if Scanner::is_type(&term) { Token::TYPE(term)} else {Token::IDENT(term)};
+                let token = if Scanner::is_keyword(&term) {
+                    Token::MODEL
+                } else if Scanner::is_type(&term) {
+                    Token::TYPE(term)
+                } else {
+                    Token::IDENT(term)
+                };
                 return Some(token);
             }
             _ => None,
@@ -58,7 +64,18 @@ impl Scanner {
         return keywords.contains(&term);
     }
     fn is_type(term: &str) -> bool {
-        let types: Vec<&str> = vec!["String", "Boolean", "Int", "BigInt", "Float", "Decimal", "DateTime", "Json", "Bytes", "Unsupported"];
+        let types: Vec<&str> = vec![
+            "String",
+            "Boolean",
+            "Int",
+            "BigInt",
+            "Float",
+            "Decimal",
+            "DateTime",
+            "Json",
+            "Bytes",
+            "Unsupported",
+        ];
         return types.contains(&term);
     }
     pub fn scan(mut self) -> Vec<Token> {
@@ -80,5 +97,43 @@ impl Scanner {
             line.clear();
         }
         tokens
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_model() {
+        let model = String::from("model");
+        let mut iter = model.chars().peekable();
+        let ch = iter.next().unwrap();
+        let result = Scanner::get_token(ch, &mut iter);
+        assert_eq!(result, Some(Token::MODEL));
+    }
+    #[test]
+    fn test_parse_ident() {
+        let ident = String::from("email");
+        let mut iter = ident.chars().peekable();
+        let ch = iter.next().unwrap();
+        let result = Scanner::get_token(ch, &mut iter);
+        assert_eq!(result, Some(Token::IDENT(ident)));
+    }
+    #[test]
+    fn test_parse_type() {
+        let field_type = String::from("BigInt");
+        let mut iter = field_type.chars().peekable();
+        let ch = iter.next().unwrap();
+        let result = Scanner::get_token(ch, &mut iter);
+        assert_eq!(result, Some(Token::TYPE(field_type)));
+    }
+    #[test]
+    fn test_parse_attribute() {
+        let attribute = String::from("@default");
+        let mut iter = attribute.chars().peekable();
+        let ch = iter.next().unwrap();
+        let result = Scanner::get_token(ch, &mut iter);
+        assert_eq!(result, Some(Token::ATTRIBUTE(attribute)));
     }
 }
