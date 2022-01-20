@@ -24,7 +24,8 @@ fn test_basic_schema() {
             Token::ATTRIBUTE(String::from("@unique")),
             Token::IDENT(String::from("password")),
             Token::TYPE(String::from("String")),
-            Token::RBRACE
+            Token::RBRACE,
+            Token::EOF
         ]
     )
 }

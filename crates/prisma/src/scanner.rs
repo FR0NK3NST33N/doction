@@ -12,6 +12,7 @@ pub enum Token {
     IDENT(String),
     MODEL,
     TYPE(String),
+    EOF,
 }
 
 pub struct Scanner {
@@ -96,7 +97,8 @@ impl Scanner {
             }
             line.clear();
         }
-        tokens
+        tokens.push(Token::EOF);
+        return tokens;
     }
 }
 
