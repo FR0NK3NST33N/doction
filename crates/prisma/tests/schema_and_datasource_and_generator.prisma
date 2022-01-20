@@ -1,0 +1,17 @@
+datasource db {
+    provider = "postgresql"
+    url = "postgreqsl:://user:pass@localhost:5432/mydb?schema=public"
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "node_modules/.prisma/client"
+  engineType    = "library"
+  binaryTargets = ["native","darwin","windows"]
+}
+
+model User {
+    id          String    @id @default(cuid())
+    email       String    @unique
+    password    String
+}
