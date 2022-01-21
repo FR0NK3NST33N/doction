@@ -6,12 +6,20 @@ use std::iter::{Iterator, Peekable};
 pub enum Token {
     LBRACE,
     RBRACE,
+    LBRACKET,
+    RBRACKET,
+    COMMA,
     LPAREN,
     RPAREN,
     ATTRIBUTE(String),
     IDENT(String),
     MODEL,
     TYPE(String),
+    EOF,
+    DATASOURCE,
+    GENERATOR,
+    EQUAL,
+    STRING(String),
 }
 
 pub struct Scanner {
@@ -28,6 +36,10 @@ impl Scanner {
             '}' => Some(Token::RBRACE),
             '(' => Some(Token::LPAREN),
             ')' => Some(Token::RPAREN),
+            '=' => Some(Token::EQUAL),
+            '[' => Some(Token::LBRACKET),
+            ']' => Some(Token::RBRACKET),
+            ',' => Some(Token::COMMA),
             '@' => {
                 let mut attribute: Vec<char> = chars
                     .by_ref()
@@ -38,6 +50,15 @@ impl Scanner {
 
                 return Some(Token::ATTRIBUTE(at.into_iter().collect()));
             }
+            '"' => {
+                let string: Vec<char> = chars
+                    .by_ref()
+                    .take_while(|ch| (ch != &'"'))
+                    .filter(|ch| ch != &'"')
+                    .collect();
+
+                return Some(Token::STRING(string.into_iter().collect()));
+            }
             value if value.is_alphanumeric() => {
                 let mut rest: Vec<char> = chars
                     .by_ref()
@@ -46,9 +67,12 @@ impl Scanner {
                 let mut first = vec![value];
                 first.append(&mut rest);
                 let term: String = first.into_iter().collect();
-                // TODO: Add more keywords and helper to get correct keyword
+
                 let token = if Scanner::is_keyword(&term) {
-                    Token::MODEL
+                    match Scanner::get_keyword_token(&term) {
+                        Some(token) => token,
+                        None => panic!("Keyword not found"),
+                    }
                 } else if Scanner::is_type(&term) {
                     Token::TYPE(term)
                 } else {
@@ -60,8 +84,16 @@ impl Scanner {
         }
     }
     fn is_keyword(term: &str) -> bool {
-        let keywords: Vec<&str> = vec!["model"];
+        let keywords: Vec<&str> = vec!["model", "datasource", "generator"];
         return keywords.contains(&term);
+    }
+    fn get_keyword_token(keyword: &str) -> Option<Token> {
+        match keyword {
+            "model" => Some(Token::MODEL),
+            "datasource" => Some(Token::DATASOURCE),
+            "generator" => Some(Token::GENERATOR),
+            _ => None,
+        }
     }
     fn is_type(term: &str) -> bool {
         let types: Vec<&str> = vec![
@@ -96,7 +128,8 @@ impl Scanner {
             }
             line.clear();
         }
-        tokens
+        tokens.push(Token::EOF);
+        return tokens;
     }
 }
 
@@ -135,5 +168,13 @@ mod tests {
         let ch = iter.next().unwrap();
         let result = Scanner::get_token(ch, &mut iter);
         assert_eq!(result, Some(Token::ATTRIBUTE(attribute)));
+    }
+    #[test]
+    fn test_parse_string() {
+        let string = String::from("\"some-string\"");
+        let mut iter = string.chars().peekable();
+        let ch = iter.next().unwrap();
+        let result = Scanner::get_token(ch, &mut iter);
+        assert_eq!(result, Some(Token::STRING(String::from("some-string"))));
     }
 }
